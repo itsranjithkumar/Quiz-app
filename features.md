@@ -1,0 +1,12 @@
+# features
+  - register
+  - login
+  - role based login
+  - score for quizzes
+  - discussion for each question
+  - time for each question
+  - types of questions (hard, easy, medium) -> MCQ, MSQ, Numerical
+  - Hint, solution
+  - Streak 
+  - Leader board (weekly)
+  - email notification
