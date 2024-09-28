@@ -7,9 +7,9 @@ import { checkAuth } from './features/auth/authSlice';
 import RegisterPage from './pages/register-page';
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
+import UserProfilePage from './pages/UserProfilePage';
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from './pages/NotFound';
-// import { RootState } from './app/store';
 
 function PrivateRoute({ children }) {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -30,10 +30,8 @@ function AppContent() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
-        <Route 
-          path="*" 
-         element= {<NotFound/>} 
-        />
+        <Route path="/user/:username" element={<PrivateRoute><UserProfilePage /></PrivateRoute>} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Toaster />
     </Router>

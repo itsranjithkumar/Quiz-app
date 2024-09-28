@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../features/auth/authSlice';
 import { Button } from "@/components/ui/button";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
@@ -92,7 +92,11 @@ export default function HomePage() {
               {employees.map((employee) => (
                 <TableRow key={employee.id}>
                   <TableCell>{employee.id}</TableCell>
-                  <TableCell>{employee.username}</TableCell>
+                  <TableCell>
+                    <Link to={`/user/${employee.username}`} className="text-blue-600 hover:underline">
+                      {employee.username}
+                    </Link>
+                  </TableCell>
                   <TableCell>{employee.email}</TableCell>
                   <TableCell>{employee.role}</TableCell>
                 </TableRow>
