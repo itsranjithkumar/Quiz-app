@@ -9,12 +9,15 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function HomePage() {
   const { user, token } = useSelector((state) => state.auth);
+  console.log(user,"assads")
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [employees, setEmployees] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-
+  if (user.role==="admin") {
+    navigate('/admin');
+  }
   useEffect(() => {
     if (token) {
       fetchEmployees();
