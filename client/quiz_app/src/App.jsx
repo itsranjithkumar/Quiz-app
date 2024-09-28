@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { store } from './app/store';
 import { checkAuth } from './features/auth/authSlice';
-import SignupPage from './pages/SignupPage'; // Import the SignupPage component
+import RegisterPage from './pages/register-page';
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
 import { Toaster } from "@/components/ui/toaster";
@@ -27,7 +27,7 @@ function AppContent() {
   return (
     <Router>
       <Routes>
-        <Route path="/register" element={<SignupPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
         <Route 

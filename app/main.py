@@ -9,7 +9,7 @@ from datetime import timedelta
 from . import models, schemas, database, auth, quiz, users
 from .database import engine, get_db
 from .utils import get_current_user
-from .routers import auth_routes, admin, quiz
+from .routers import auth_routes, admin, quiz, users
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -60,3 +60,4 @@ def read_users_me(current_user: schemas.User = Depends(get_current_user)):
 app.include_router(auth_routes.router)
 app.include_router(admin.router)
 app.include_router(quiz.router)
+app.include_router(users.router)

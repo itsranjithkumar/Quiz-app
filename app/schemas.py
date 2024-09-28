@@ -33,7 +33,7 @@ class QuizCreate(QuizBase):
 
 
 class Loginschema(BaseModel):
-    username: str
+    email: str
     password: str
 
 
