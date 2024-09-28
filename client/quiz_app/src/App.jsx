@@ -10,6 +10,17 @@ import HomePage from './pages/HomePage';
 import UserProfilePage from './pages/UserProfilePage';
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from './pages/NotFound';
+import AdminPage from './pages/AdminPage';
+
+
+function AdminRoute({ children }) {
+  const { user } = useSelector((state) => state.auth);
+
+  if (user?.role === 'admin') {
+    return children;
+  }
+  return <Navigate to="/unauthorized" />;
+}
 
 function PrivateRoute({ children }) {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -29,6 +40,8 @@ function AppContent() {
       <Routes>
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
+
         <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
         <Route path="/:username" element={<PrivateRoute><UserProfilePage /></PrivateRoute>} />
       </Routes>

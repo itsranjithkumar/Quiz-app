@@ -1,8 +1,20 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+import { jwtDecode } from "jwt-decode";
+
+export const getRoleFromToken = () => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    const decodedToken = jwtDecode(token);
+    return decodedToken.role; // assuming the token contains a 'role' field
+  }
+  return null;
+};
+
+
 export const loginUser = createAsyncThunk(
   'auth/login',
-  async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
+  async ({ email, password }, { rejectWithValue }) => {
     try {
       const response = await fetch('http://127.0.0.1:8000/auth/login', {
         method: 'POST',
@@ -17,14 +29,18 @@ export const loginUser = createAsyncThunk(
       }
 
       const data = await response.json();
+      const { access_token, role } = jwtDecode(data.access_token);
+
       localStorage.setItem('token', data.access_token);
-      localStorage.setItem('user', JSON.stringify({ email }));
-      return { token: data.access_token, user: { email } };
+      localStorage.setItem('user', JSON.stringify({ email, role }));
+
+      return { token: data.access_token, user: { email, role } };
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
+
 
 export const checkAuth = createAsyncThunk(
   'auth/check',

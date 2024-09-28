@@ -37,6 +37,16 @@ app.add_middleware(
 
 
 
+def create_admin(db: Session):
+    if not db.query(models.User).filter(models.User.username == "admin").first():
+        db_user = models.User(username="admin", email="admin@localhost",role="admin", hashed_password=auth.get_password_hash("admin"))
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+    return None
+
+create_admin(db=next(get_db()))
 
 # Login route to generate JWT token
 @app.get("/users/me", response_model=schemas.User)

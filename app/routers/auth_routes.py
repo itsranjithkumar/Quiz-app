@@ -29,7 +29,7 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 
-@router.post("/login", response_model=schemas.Token)
+@router.post("/login")
 def login_for_access_token(form_data: schemas.Loginschema, db: Session = Depends(get_db)):
     user = users.authenticate_user(db, form_data.email, form_data.password)
     if not user:
@@ -40,9 +40,9 @@ def login_for_access_token(form_data: schemas.Loginschema, db: Session = Depends
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = auth.create_access_token(
-        data={"sub": user.username,"user_id": user.id}, expires_delta=access_token_expires
+        data={"sub": user.username,"user_id": user.id,"role": user.role}, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer", "user_id": user.id, "role": user.role}
 
 # Get current user
 @router.get("/users/me/streak", response_model=schemas.Streak)
