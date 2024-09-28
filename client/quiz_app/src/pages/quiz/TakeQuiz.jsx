@@ -12,9 +12,9 @@ import { Label } from "@/components/ui/label"
 
 export default function TakeQuiz() {
   const [quizId, setQuizId] = useState("1") // Replace with actual quiz ID
-  const [questions, setQuestions] = useState<Question[]>([])
+  const [questions, setQuestions] = useState<Question>([])
   const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [answers, setAnswers] = useState<Record<number, string | string[]>>({})
+  const [answers, setAnswers] = useState({})
   const [timer, setTimer] = useState(60) // Replace with actual quiz timer
 
   useEffect(() => {
@@ -82,7 +82,7 @@ export default function TakeQuiz() {
                 <Checkbox
                   id={`option-${index}`}
                   onCheckedChange={(checked) => {
-                    const currentAnswers = answers[currentQuestion] as string[] || []
+                    const currentAnswers = answers[currentQuestion]  || []
                     if (checked) {
                       handleAnswer([...currentAnswers, option])
                     } else {

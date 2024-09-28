@@ -1,57 +1,48 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import CreateQuizModal from "./create-quiz-modal"
-import AddQuestion from "./add-question"
-import ViewQuizQuestions from "./view-quiz-questions"
-import TakeQuiz from "./take-quiz"
+// import CreateQuizModal from "./pages/quiz/CreateQuizModal";
+import AddQuestion from "./quiz/AddQuestion";
+import ViewQuizQuestions from "./quiz/ViewQuizQuestions";
+import TakeQuiz from "./quiz/TakeQuiz";
+import CreateQuizModal from "./quiz/CreateQuizModal";
 
-interface Quiz {
-  id: number
-  title: string
-  difficulty: string
-  timer: number
-}
+
 
 export default function AdminDashboard() {
-  const [quizzes, setQuizzes] = useState<Quiz[]>([])
-  const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null)
-  const [currentPage, setCurrentPage] = useState("dashboard")
-  const router = useRouter()
+  const [quizzes, setQuizzes] = useState([]);
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
+  const [currentPage, setCurrentPage] = useState("dashboard");
 
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
         // TODO: Replace with actual API call
-        const response = await fetch("/api/quizzes")
-        const data = await response.json()
-        setQuizzes(data)
+        const response = await fetch("/api/quizzes");
+        const data = await response.json();
+        setQuizzes(data);
       } catch (error) {
-        console.error("Failed to fetch quizzes:", error)
+        console.error("Failed to fetch quizzes:", error);
       }
-    }
+    };
 
-    fetchQuizzes()
-  }, [])
+    fetchQuizzes();
+  }, []);
 
-  const handleDeleteQuiz = async (id: number) => {
+  const handleDeleteQuiz = async (id) => {
     // TODO: Implement delete quiz functionality
-    console.log(`Delete quiz with id: ${id}`)
-  }
+    console.log(`Delete quiz with id: ${id}`);
+  };
 
   const renderContent = () => {
     switch (currentPage) {
       case "addQuestion":
-        return <AddQuestion />
+        return <AddQuestion quiz={selectedQuiz} />;
       case "viewQuestions":
-        return <ViewQuizQuestions />
+        return <ViewQuizQuestions quiz={selectedQuiz} />;
       case "takeQuiz":
-        return <TakeQuiz />
+        return <TakeQuiz quiz={selectedQuiz} />;
       default:
         return (
           <Card>
@@ -82,8 +73,8 @@ export default function AdminDashboard() {
                             variant="outline"
                             size="sm"
                             onClick={() => {
-                              setSelectedQuiz(quiz)
-                              setCurrentPage("viewQuestions")
+                              setSelectedQuiz(quiz);
+                              setCurrentPage("viewQuestions");
                             }}
                           >
                             View Questions
@@ -92,8 +83,8 @@ export default function AdminDashboard() {
                             variant="outline"
                             size="sm"
                             onClick={() => {
-                              setSelectedQuiz(quiz)
-                              setCurrentPage("addQuestion")
+                              setSelectedQuiz(quiz);
+                              setCurrentPage("addQuestion");
                             }}
                           >
                             Add Question
@@ -102,8 +93,8 @@ export default function AdminDashboard() {
                             variant="outline"
                             size="sm"
                             onClick={() => {
-                              setSelectedQuiz(quiz)
-                              setCurrentPage("takeQuiz")
+                              setSelectedQuiz(quiz);
+                              setCurrentPage("takeQuiz");
                             }}
                           >
                             Take Quiz
@@ -123,9 +114,9 @@ export default function AdminDashboard() {
               </Table>
             </CardContent>
           </Card>
-        )
+        );
     }
-  }
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -136,5 +127,5 @@ export default function AdminDashboard() {
       </div>
       {renderContent()}
     </div>
-  )
+  );
 }
