@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // useNavigate replaces useHistory in React Router v6
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +12,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate(); // This replaces useHistory
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,7 +34,7 @@ export default function SignupPage() {
 
       setSuccess(true);
       // Redirect to login page after successful signup
-      setTimeout(() => history.push('/login'), 2000);
+      setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
       setError('An error occurred during signup. Please try again.');
     }
