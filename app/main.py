@@ -2,6 +2,8 @@ from fastapi import FastAPI, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
+from fastapi.middleware.cors import CORSMiddleware
+
 from datetime import timedelta
 
 from . import models, schemas, database, auth, quiz, users
@@ -18,6 +20,19 @@ models.Base.metadata.create_all(bind=engine)
 # OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+
+origins = [
+    "http://localhost:5173",  # Your frontend origin
+    "http://127.0.0.1:5173",  # Alternative frontend origin
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Allows requests from your frontend
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all HTTP methods (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],  # Allows all headers
+)
 
 
 

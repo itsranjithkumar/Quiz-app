@@ -31,6 +31,12 @@ class QuizBase(BaseModel):
 class QuizCreate(QuizBase):
     pass
 
+
+class Loginschema(BaseModel):
+    username: str
+    password: str
+
+
 class Quiz(QuizBase):
     id: int
 
