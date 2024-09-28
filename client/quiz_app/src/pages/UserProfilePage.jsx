@@ -6,14 +6,13 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import NotFound from './NotFound';
 
-
-
 export default function UserProfilePage() {
   const { username } = useParams();
   const { token } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const [userProfile, setUserProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [errorStatus, setErrorStatus] = useState(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -26,6 +25,7 @@ export default function UserProfilePage() {
 
   const fetchUserProfile = async () => {
     setIsLoading(true);
+    setErrorStatus(null); // Reset error status before fetching
     try {
       const response = await fetch(`http://127.0.0.1:8000/users/${username}`, {
         headers: {
@@ -36,6 +36,9 @@ export default function UserProfilePage() {
       if (!response.ok) {
         if (response.status === 401) {
           throw new Error('Unauthorized: Please log in again');
+        } else if (response.status === 404) {
+          setErrorStatus(404);  // Set the 404 error status
+          return;  // No need to throw an error, handle it in the UI
         }
         throw new Error('Failed to fetch user profile');
       }
@@ -43,7 +46,6 @@ export default function UserProfilePage() {
       setUserProfile(data);
     } catch (error) {
       console.error('Error fetching user profile:', error);
-      return <NotFound/>    
       toast({
         title: "Error",
         description: error.message || "Failed to fetch user profile",
@@ -51,15 +53,19 @@ export default function UserProfilePage() {
       });
       
       if (error.message === 'Unauthorized: Please log in again') {
-          navigate('/login');
-        }
+        navigate('/login');
+      }
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   };
 
   if (isLoading) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
+
+  if (errorStatus === 404) {
+    return <NotFound />;  // Render NotFound component if 404 error
   }
 
   if (!userProfile) {
