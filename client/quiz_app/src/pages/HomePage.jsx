@@ -93,7 +93,7 @@ export default function HomePage() {
                 <TableRow key={employee.id}>
                   <TableCell>{employee.id}</TableCell>
                   <TableCell>
-                    <Link to={`/user/${employee.username}`} className="text-blue-600 hover:underline">
+                    <Link to={`/${employee.username}`} className="text-blue-600 hover:underline">
                       {employee.username}
                     </Link>
                   </TableCell>
