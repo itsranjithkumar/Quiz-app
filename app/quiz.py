@@ -3,6 +3,8 @@ from . import models, schemas
 
 # Create a new quiz
 def create_quiz(db: Session, quiz: schemas.QuizCreate):
+    if db.query(models.Quiz).filter(models.Quiz.title == quiz.title).first():
+        raise ValueError("Quiz title already exists")
     db_quiz = models.Quiz(title=quiz.title, difficulty=quiz.difficulty)
     db.add(db_quiz)
     db.commit()

@@ -1,6 +1,6 @@
 # Admin-specific route for adding quizzes
 # from ..auth import get_current_user
-from fastapi import APIRouter, BackgroundTasks, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app import auth
@@ -17,7 +17,10 @@ router = APIRouter(
 )
 @router.post("/quiz", response_model=schemas.Quiz)
 def create_quiz(quiz_data: schemas.QuizCreate, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_admin_user)):
-    return quiz.create_quiz(db=db, quiz=quiz_data)
+    try:
+        return quiz.create_quiz(db=db, quiz=quiz_data)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/quiz/{quiz_id}/question", response_model=schemas.Question)
 def add_question(quiz_id: int, question: schemas.QuestionCreate, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_admin_user)):

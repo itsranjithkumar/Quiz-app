@@ -14,7 +14,7 @@ class User(Base):
 class Quiz(Base):
     __tablename__ = "quizzes"
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String)
+    title = Column(String, unique=True, index=True)
     difficulty = Column(String)  # easy, medium, hard
 
 class Question(Base):
