@@ -54,6 +54,11 @@ def read_users_me(current_user: schemas.User = Depends(get_current_user)):
     return current_user
 
 
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
+
+
 # Get all quizzes (accessible to all users)
 
 

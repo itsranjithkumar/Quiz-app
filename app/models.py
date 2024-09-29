@@ -16,7 +16,6 @@ class Quiz(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String)
     difficulty = Column(String)  # easy, medium, hard
-    timer = Column(Integer)  # in seconds
 
 class Question(Base):
     __tablename__ = "questions"
@@ -26,6 +25,7 @@ class Question(Base):
     question_type = Column(String)  # MCQ, MSQ, Numerical
     options = Column(String)  # For MCQ/MSQ, store as a JSON array
     correct_answer = Column(String)  # Store correct answer(s)
+    duration=Column(Integer)# seconds
 
 class Score(Base):
     __tablename__ = "scores"

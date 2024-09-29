@@ -26,7 +26,6 @@ class Token(BaseModel):
 class QuizBase(BaseModel):
     title: str
     difficulty: str
-    timer: int
 
 class QuizCreate(QuizBase):
     pass
