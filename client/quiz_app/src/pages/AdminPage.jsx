@@ -39,6 +39,7 @@ export default function AdminDashboard() {
     switch (currentPage) {
       case "addQuestion":
         return <AddQuestion quiz={selectedQuiz} />;
+
       case "viewQuestions":
         return <ViewQuizQuestions quiz={selectedQuiz} />;
       case "takeQuiz":

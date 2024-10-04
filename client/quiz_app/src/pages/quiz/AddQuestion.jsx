@@ -7,33 +7,50 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 
-export default function AddQuestion() {
-  const [quizId, setQuizId] = useState("")
+export default function AddQuestion({ quiz }) {
   const [questionText, setQuestionText] = useState("")
   const [questionType, setQuestionType] = useState("")
   const [options, setOptions] = useState(["", "", "", ""])
   const [correctAnswer, setCorrectAnswer] = useState("")
+  const [duration, setDuration] = useState(0)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    // TODO: Implement API call to add question
-    console.log({ quizId, questionText, questionType, options, correctAnswer })
+
+    const formattedOptions = options.filter(option => option !== "").join(";") // Join options into a semicolon-separated string
+
+    const questionData = {
+      question_text: questionText,
+      question_type: questionType,
+      options: formattedOptions,
+      correct_answer: correctAnswer,
+      duration: parseInt(duration, 10),
+    }
+
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/questions/${quiz.id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(questionData),
+      })
+
+      if (response.ok) {
+        // Handle success
+        console.log("Question added successfully!")
+      } else {
+        console.error("Failed to add question")
+      }
+    } catch (error) {
+      console.error("Error:", error)
+    }
   }
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Add Question</h1>
+      <h1 className="text-2xl font-bold mb-4">Add Question to Quiz {quiz.title}</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="quizId">Quiz ID</Label>
-          <Input
-            id="quizId"
-            value={quizId}
-            onChange={(e) => setQuizId(e.target.value)}
-            placeholder="Enter Quiz ID"
-            required
-          />
-        </div>
         <div className="space-y-2">
           <Label htmlFor="questionText">Question Text</Label>
           <Textarea
@@ -82,6 +99,17 @@ export default function AddQuestion() {
             value={correctAnswer}
             onChange={(e) => setCorrectAnswer(e.target.value)}
             placeholder="Enter correct answer"
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="duration">Duration (minutes)</Label>
+          <Input
+            id="duration"
+            value={duration}
+            onChange={(e) => setDuration(e.target.value)}
+            type="number"
+            placeholder="Enter duration in seconds"
             required
           />
         </div>
