@@ -6,20 +6,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 
 
-export default function ViewQuizQuestions() {
+export default function ViewQuizQuestions({quiz}) {
   const [quizId, setQuizId] = useState("1") // Replace with actual quiz ID
-  const [questions, setQuestions] = useState([])
-
+  const questions=quiz?.questions
+  console.log(quiz)
   useEffect(() => {
     // TODO: Implement API call to fetch questions for the quiz
     // This is a mock API call
-    const fetchQuestions = async () => {
-      const response = await fetch(`/api/quizzes/${quizId}/questions`)
-      const data = await response.json()
-      setQuestions(data)
-    }
+    // const fetchQuestions = async () => {
+    //   const response = await fetch(`/api/quizzes/${quizId}/questions`)
+    //   const data = await response.json()
+    //   setQuestions(data)
+    // }
 
-    fetchQuestions()
+    // fetchQuestions()
   }, [quizId])
 
   return (

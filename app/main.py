@@ -60,6 +60,10 @@ def read_root():
     return {"Hello": "World"}
 
 
+
+
+
+
 # Get all quizzes (accessible to all users)
 
 

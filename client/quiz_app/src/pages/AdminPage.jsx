@@ -1,24 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-// import CreateQuizModal from "./pages/quiz/CreateQuizModal";
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import AddQuestion from "./quiz/AddQuestion";
 import ViewQuizQuestions from "./quiz/ViewQuizQuestions";
 import TakeQuiz from "./quiz/TakeQuiz";
 import CreateQuizModal from "./quiz/CreateQuizModal";
-
-
 
 export default function AdminDashboard() {
   const [quizzes, setQuizzes] = useState([]);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [currentPage, setCurrentPage] = useState("dashboard");
 
+  // Fetch quizzes on component mount
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
-        // TODO: Replace with actual API call
         const response = await fetch("http://127.0.0.1:8000/quiz/quizzes");
         const data = await response.json();
         setQuizzes(data);
@@ -30,16 +27,32 @@ export default function AdminDashboard() {
     fetchQuizzes();
   }, []);
 
+  // Handle quiz deletion
   const handleDeleteQuiz = async (id) => {
-    // TODO: Implement delete quiz functionality
-    console.log(`Delete quiz with id: ${id}`);
+    console.log(`Sending delete request for quiz ID: ${id}`); // Debugging log
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/quiz/quiz/${id}`, {
+        method: "DELETE",
+      });
+  
+      if (response.ok) {
+        // If deletion is successful, update the state to remove the deleted quiz
+        setQuizzes((prevQuizzes) => prevQuizzes.filter((quiz) => quiz.id !== id));
+        console.log(`Quiz with id: ${id} has been deleted successfully.`);
+      } else {
+        const errorData = await response.json(); // Get error response data
+        console.error("Failed to delete quiz:", response.statusText, errorData);
+      }
+    } catch (error) {
+      console.error("Error occurred while deleting quiz:", error);
+    }
   };
 
+  // Render the content based on current page
   const renderContent = () => {
     switch (currentPage) {
       case "addQuestion":
         return <AddQuestion quiz={selectedQuiz} setCurrentPage={setCurrentPage} />;
-
       case "viewQuestions":
         return <ViewQuizQuestions quiz={selectedQuiz} />;
       case "takeQuiz":
@@ -103,7 +116,7 @@ export default function AdminDashboard() {
                           <Button
                             variant="destructive"
                             size="sm"
-                            onClick={() => handleDeleteQuiz(quiz.id)}
+                            onClick={() => handleDeleteQuiz(quiz.id)} // Call delete function
                           >
                             Delete
                           </Button>

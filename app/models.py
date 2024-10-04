@@ -16,6 +16,7 @@ class Quiz(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, unique=True, index=True)
     difficulty = Column(String)  # easy, medium, hard
+
     questions = relationship("Question", back_populates="quiz")
 
 class Question(Base):
@@ -37,3 +38,6 @@ class Score(Base):
     quiz_id = Column(Integer, ForeignKey("quizzes.id"))
     score = Column(Integer)
     streak = Column(Integer)  # Track user streaks
+
+
+
