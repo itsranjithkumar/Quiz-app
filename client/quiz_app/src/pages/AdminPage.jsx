@@ -91,8 +91,10 @@ export default function AdminDashboard() {
                               setCurrentPage("viewQuestions");
                             }}
                           >
-                            View {quiz.questions.length} Questions
-                          </Button>
+View <span className="text-red-500 mx-2">{quiz.questions.length}</span> Questions
+  </Button>
+
+
                           <Button
                             variant="outline"
                             size="sm"

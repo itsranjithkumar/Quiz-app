@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,20 +6,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
-export default function AddQuestion({ quiz,setCurrentPage }) {
-  const navigate = useNavigate(); // Replaces useHistory
-  const [quizId, setQuizId] = useState(quiz?.id || ""); // Pre-populate quiz ID
+export default function AddQuestion({ quiz, setCurrentPage }) {
+  const navigate = useNavigate();
+  const [quizId, setQuizId] = useState(quiz?.id || ""); 
   const [questionText, setQuestionText] = useState("");
   const [questionType, setQuestionType] = useState("");
   const [options, setOptions] = useState(["", "", "", ""]);
   const [correctAnswer, setCorrectAnswer] = useState("");
-  const [duration, setDuration] = useState(0)
-
-  const [error, setError] = useState(""); // To handle errors
+  const [selectedAnswer, setSelectedAnswer] = useState(""); // Track selected answer
+  const [error, setError] = useState(""); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted"); // Debugging log
 
     try {
       const response = await fetch(`http://127.0.0.1:8000/questions/${quizId}`, {
@@ -30,29 +28,27 @@ export default function AddQuestion({ quiz,setCurrentPage }) {
         body: JSON.stringify({
           question_text: questionText,
           question_type: questionType,
-          options: options.join(","), // Join options into a comma-separated string
+          options: options.join(","), 
           correct_answer: correctAnswer,
-          duration: parseInt(duration*60, 10),
         }),
       });
-
-      console.log("Response status:", response.status); // Debugging log
 
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.detail || "Failed to add question");
       }
 
-      console.log("Navigating to admin page..."); // Debugging log
-      
       setCurrentPage("dashboard");
-      // reload
       window.location.reload();
 
     } catch (err) {
-      console.error("Error occurred:", err.message); // Debugging log
-      setError(err.message); // Set error message to be displayed
+      setError(err.message); 
     }
+  };
+
+  // Function to check if an option is correct or wrong
+  const handleOptionSelect = (selectedOption) => {
+    setSelectedAnswer(selectedOption);
   };
 
   return (
@@ -94,24 +90,37 @@ export default function AddQuestion({ quiz,setCurrentPage }) {
             </SelectContent>
           </Select>
         </div>
+
         {(questionType === "MCQ" || questionType === "MSQ") && (
           <div className="space-y-2">
             <Label>Options</Label>
             {options.map((option, index) => (
-              <Input
-                key={index}
-                value={option}
-                onChange={(e) => {
-                  const newOptions = [...options];
-                  newOptions[index] = e.target.value;
-                  setOptions(newOptions);
-                }}
-                placeholder={`Option ${index + 1}`}
-                required
-              />
+              <div key={index} className="flex items-center space-x-2">
+                <Input
+                  value={option}
+                  onChange={(e) => {
+                    const newOptions = [...options];
+                    newOptions[index] = e.target.value;
+                    setOptions(newOptions);
+                  }}
+                  placeholder={`Option ${index + 1}`}
+                  required
+                />
+                {/* Check for correct and wrong answer */}
+                {selectedAnswer && (
+                  <span className="ml-2">
+                    {option === correctAnswer ? (
+                      <span className="text-green-500">✔</span> // Correct answer mark
+                    ) : selectedAnswer === option ? (
+                      <span className="text-red-500">✘</span> // Wrong answer mark
+                    ) : null}
+                  </span>
+                )}
+              </div>
             ))}
           </div>
         )}
+
         <div className="space-y-2">
           <Label htmlFor="correctAnswer">Correct Answer</Label>
           <Input
@@ -122,17 +131,20 @@ export default function AddQuestion({ quiz,setCurrentPage }) {
             required
           />
         </div>
+
         <div className="space-y-2">
-          <Label htmlFor="duration">Duration (minutes)</Label>
-          <Input
-            id="duration"
-            value={duration}
-            onChange={(e) => setDuration(e.target.value)}
-            type="number"
-            placeholder="Enter duration in seconds"
-            required
-          />
+          <Label>Select Answer</Label>
+          {options.map((option, index) => (
+            <Button
+              key={index}
+              variant={selectedAnswer === option ? "outline" : "solid"}
+              onClick={() => handleOptionSelect(option)}
+            >
+              {option}
+            </Button>
+          ))}
         </div>
+
         {error && <p className="text-red-600">{error}</p>} {/* Show error if exists */}
         <Button type="submit" className="w-full">Add Question</Button>
       </form>
