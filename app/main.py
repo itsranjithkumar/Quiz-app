@@ -24,6 +24,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 origins = [
     "http://localhost:5173",  # Your frontend origin
     "http://127.0.0.1:5173",  # Alternative frontend origin
+    
 ]
 
 app.add_middleware(

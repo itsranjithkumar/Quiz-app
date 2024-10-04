@@ -1,4 +1,4 @@
-from fastapi_mail import FastMail, MessageSchema
+from fastapi_mail import FastMail, MessageSchema 
 from fastapi import BackgroundTasks
 
 # Assuming you have set up FastAPI Mail configuration somewhere in your project
