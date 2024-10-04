@@ -2,19 +2,24 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
 export default function AddQuestion({ quiz, setCurrentPage }) {
   const navigate = useNavigate();
-  const [quizId, setQuizId] = useState(quiz?.id || ""); 
+  const [quizId, setQuizId] = useState(quiz?.id || "");
   const [questionText, setQuestionText] = useState("");
   const [questionType, setQuestionType] = useState("");
   const [options, setOptions] = useState(["", "", "", ""]);
-  const [correctAnswer, setCorrectAnswer] = useState("");
-  const [selectedAnswer, setSelectedAnswer] = useState(""); // Track selected answer
-  const [error, setError] = useState(""); 
+  const [correctAnswers, setCorrectAnswers] = useState([]); // Track multiple correct answers
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,8 +33,8 @@ export default function AddQuestion({ quiz, setCurrentPage }) {
         body: JSON.stringify({
           question_text: questionText,
           question_type: questionType,
-          options: options.join(","), 
-          correct_answer: correctAnswer,
+          options: options.join(","), // join options as a comma-separated string
+          correct_answers: correctAnswers.join(","), // join correct answers for MSQ/MCQ
         }),
       });
 
@@ -40,21 +45,33 @@ export default function AddQuestion({ quiz, setCurrentPage }) {
 
       setCurrentPage("dashboard");
       window.location.reload();
-
     } catch (err) {
-      setError(err.message); 
+      setError(err.message); // Display error message
     }
   };
 
-  // Function to check if an option is correct or wrong
-  const handleOptionSelect = (selectedOption) => {
-    setSelectedAnswer(selectedOption);
+  // Toggle selected correct answers for MSQ
+  const handleCorrectAnswerSelect = (option) => {
+    if (questionType === "MSQ") {
+      const updatedCorrectAnswers = correctAnswers.includes(option)
+        ? correctAnswers.filter((answer) => answer !== option)
+        : [...correctAnswers, option];
+
+      if (updatedCorrectAnswers.length > 3) {
+        setError("You can only select up to 3 correct answers.");
+      } else {
+        setCorrectAnswers(updatedCorrectAnswers);
+        setError(""); // Clear any previous errors
+      }
+    } else {
+      setCorrectAnswers([option]); // For MCQ, set only one correct answer
+    }
   };
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Add Question</h1>
-     
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="quizId">Quiz ID</Label>
@@ -106,48 +123,26 @@ export default function AddQuestion({ quiz, setCurrentPage }) {
                   placeholder={`Option ${index + 1}`}
                   required
                 />
-                {/* Check for correct and wrong answer */}
-                {selectedAnswer && (
-                  <span className="ml-2">
-                    {option === correctAnswer ? (
-                      <span className="text-green-500">✔</span> // Correct answer mark
-                    ) : selectedAnswer === option ? (
-                      <span className="text-red-500">✘</span> // Wrong answer mark
-                    ) : null}
-                  </span>
-                )}
+                <Button
+                  variant={correctAnswers.includes(option) ? "solid" : "outline"}
+                  onClick={() => handleCorrectAnswerSelect(option)}
+                >
+                  {correctAnswers.includes(option) ? "Correct" : "Select"}
+                </Button>
               </div>
             ))}
           </div>
         )}
 
-        <div className="space-y-2">
-          <Label htmlFor="correctAnswer">Correct Answer</Label>
-          <Input
-            id="correctAnswer"
-            value={correctAnswer}
-            onChange={(e) => setCorrectAnswer(e.target.value)}
-            placeholder="Enter correct answer"
-            required
-          />
-        </div>
+        {error && <p className="text-red-600">{error}</p>} {/* Display error */}
 
-        <div className="space-y-2">
-          <Label>Select Answer</Label>
-          {options.map((option, index) => (
-            <Button
-              key={index}
-              variant={selectedAnswer === option ? "outline" : "solid"}
-              onClick={() => handleOptionSelect(option)}
-            >
-              {option}
-            </Button>
-          ))}
-        </div>
-
-        {error && <p className="text-red-600">{error}</p>} {/* Show error if exists */}
-        <Button type="submit" className="w-full">Add Question</Button>
+        <Button type="submit" className="w-full">
+          Add Question
+        </Button>
       </form>
     </div>
   );
 }
+
+
+
