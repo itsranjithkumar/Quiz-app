@@ -11,6 +11,7 @@ import UserProfilePage from './pages/UserProfilePage';
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from './pages/NotFound';
 import AdminPage from './pages/AdminPage';
+import UnauthorizedPage from './pages/UnauthorizedPage';
 
 function AdminRoute({ children }) {
   const { user } = useSelector((state) => state.auth);
@@ -53,7 +54,7 @@ function AppContent() {
         <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
         <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
         <Route path="/:username" element={<PrivateRoute><UserProfilePage /></PrivateRoute>} />
-        <Route path="*" element={<NotFound />} />
+        <Route path="/*" element={<NotFound />} />
       </Routes>
       <Toaster />
     </Router>
@@ -69,3 +70,5 @@ function App() {
 }
 
 export default App;
+
+

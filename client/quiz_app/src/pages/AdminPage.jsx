@@ -19,7 +19,7 @@ export default function AdminDashboard() {
     const fetchQuizzes = async () => {
       try {
         // TODO: Replace with actual API call
-        const response = await fetch("/api/quizzes");
+        const response = await fetch("http://127.0.0.1:8000/quiz/quizzes");
         const data = await response.json();
         setQuizzes(data);
       } catch (error) {
