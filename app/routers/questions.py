@@ -10,7 +10,7 @@ router = APIRouter(
 )
 
 
-@router.post("/{quiz_id}/", response_model=QuestionCreate)
+@router.post("/{quiz_id}", response_model=QuestionCreate)
 def add_question(question: QuestionCreate,quiz_id: int,db: Session = Depends(get_db)):
     new_question = Question(**question.dict())
     new_question.quiz_id = quiz_id

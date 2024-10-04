@@ -38,7 +38,7 @@ export default function AdminDashboard() {
   const renderContent = () => {
     switch (currentPage) {
       case "addQuestion":
-        return <AddQuestion quiz={selectedQuiz} />;
+        return <AddQuestion quiz={selectedQuiz} setCurrentPage={setCurrentPage} />;
 
       case "viewQuestions":
         return <ViewQuizQuestions quiz={selectedQuiz} />;

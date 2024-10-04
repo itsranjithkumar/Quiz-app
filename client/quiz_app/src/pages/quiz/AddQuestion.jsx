@@ -1,56 +1,76 @@
-"use client"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-
-export default function AddQuestion({ quiz }) {
-  const [questionText, setQuestionText] = useState("")
-  const [questionType, setQuestionType] = useState("")
-  const [options, setOptions] = useState(["", "", "", ""])
-  const [correctAnswer, setCorrectAnswer] = useState("")
+export default function AddQuestion({ quiz,setCurrentPage }) {
+  const navigate = useNavigate(); // Replaces useHistory
+  const [quizId, setQuizId] = useState(quiz?.id || ""); // Pre-populate quiz ID
+  const [questionText, setQuestionText] = useState("");
+  const [questionType, setQuestionType] = useState("");
+  const [options, setOptions] = useState(["", "", "", ""]);
+  const [correctAnswer, setCorrectAnswer] = useState("");
   const [duration, setDuration] = useState(0)
 
+  const [error, setError] = useState(""); // To handle errors
+
   const handleSubmit = async (e) => {
-    e.preventDefault()
-
-    const formattedOptions = options.filter(option => option !== "").join(";") // Join options into a semicolon-separated string
-
-    const questionData = {
-      question_text: questionText,
-      question_type: questionType,
-      options: formattedOptions,
-      correct_answer: correctAnswer,
-      duration: parseInt(duration, 10),
-    }
+    e.preventDefault();
+    console.log("Form submitted"); // Debugging log
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/questions/${quiz.id}`, {
+      const response = await fetch(`http://127.0.0.1:8000/questions/${quizId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(questionData),
-      })
+        body: JSON.stringify({
+          question_text: questionText,
+          question_type: questionType,
+          options: options.join(","), // Join options into a comma-separated string
+          correct_answer: correctAnswer,
+          duration: parseInt(duration*60, 10),
+        }),
+      });
 
-      if (response.ok) {
-        // Handle success
-        console.log("Question added successfully!")
-      } else {
-        console.error("Failed to add question")
+      console.log("Response status:", response.status); // Debugging log
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to add question");
       }
-    } catch (error) {
-      console.error("Error:", error)
+
+      console.log("Navigating to admin page..."); // Debugging log
+      
+      setCurrentPage("dashboard");
+      // reload
+      window.location.reload();
+
+    } catch (err) {
+      console.error("Error occurred:", err.message); // Debugging log
+      setError(err.message); // Set error message to be displayed
     }
-  }
+  };
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Add Question to Quiz {quiz.title}</h1>
+      <h1 className="text-2xl font-bold mb-4">Add Question</h1>
+     
       <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="quizId">Quiz ID</Label>
+          <Input
+            id="quizId"
+            value={quizId}
+            onChange={(e) => setQuizId(e.target.value)}
+            placeholder="Enter Quiz ID"
+            required
+            disabled
+          />
+        </div>
         <div className="space-y-2">
           <Label htmlFor="questionText">Question Text</Label>
           <Textarea
@@ -82,9 +102,9 @@ export default function AddQuestion({ quiz }) {
                 key={index}
                 value={option}
                 onChange={(e) => {
-                  const newOptions = [...options]
-                  newOptions[index] = e.target.value
-                  setOptions(newOptions)
+                  const newOptions = [...options];
+                  newOptions[index] = e.target.value;
+                  setOptions(newOptions);
                 }}
                 placeholder={`Option ${index + 1}`}
                 required
@@ -113,8 +133,9 @@ export default function AddQuestion({ quiz }) {
             required
           />
         </div>
+        {error && <p className="text-red-600">{error}</p>} {/* Show error if exists */}
         <Button type="submit" className="w-full">Add Question</Button>
       </form>
     </div>
-  )
+  );
 }
