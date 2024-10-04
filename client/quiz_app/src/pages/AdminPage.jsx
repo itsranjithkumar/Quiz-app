@@ -77,7 +77,7 @@ export default function AdminDashboard() {
                               setCurrentPage("viewQuestions");
                             }}
                           >
-                            View Questions
+                            View {quiz.questions.length} Questions
                           </Button>
                           <Button
                             variant="outline"

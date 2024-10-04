@@ -22,10 +22,27 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
+class QuestionBase(BaseModel):
+    question_text: str
+    question_type: str
+    options: str  # Assuming JSON format for MCQ options
+    correct_answer: str
+    duration: int
+    
+
+class Question(QuestionBase):
+    id: int
+    quiz_id: int
+
+    class Config:
+        orm_mode = True
+
+
 # Quiz schema
 class QuizBase(BaseModel):
     title: str
     difficulty: str
+    questions: Optional[List[Question]] = None
 
 class QuizCreate(QuizBase):
     pass
@@ -43,21 +60,9 @@ class Quiz(QuizBase):
         orm_mode = True
 
 # Question schema
-class QuestionBase(BaseModel):
-    question_text: str
-    question_type: str
-    options: str  # Assuming JSON format for MCQ options
-    correct_answer: str
 
 class QuestionCreate(QuestionBase):
     pass
-
-class Question(QuestionBase):
-    id: int
-    quiz_id: int
-
-    class Config:
-        orm_mode = True
 
 # Answer schema
 class Answer(BaseModel):

@@ -9,7 +9,7 @@ from datetime import timedelta
 from . import models, schemas, database, auth, quiz, users
 from .database import engine, get_db
 from .utils import get_current_user
-from .routers import auth_routes, admin, quiz, users
+from .routers import auth_routes, admin, quiz, users, questions
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -24,7 +24,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 origins = [
     "http://localhost:5173",  # Your frontend origin
     "http://127.0.0.1:5173",  # Alternative frontend origin
-    
+
 ]
 
 app.add_middleware(
@@ -77,3 +77,4 @@ app.include_router(auth_routes.router)
 app.include_router(admin.router)
 app.include_router(quiz.router)
 app.include_router(users.router)
+app.include_router(questions.router)

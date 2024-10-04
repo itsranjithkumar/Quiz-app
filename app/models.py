@@ -16,6 +16,7 @@ class Quiz(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, unique=True, index=True)
     difficulty = Column(String)  # easy, medium, hard
+    questions = relationship("Question", back_populates="quiz")
 
 class Question(Base):
     __tablename__ = "questions"
@@ -26,6 +27,8 @@ class Question(Base):
     options = Column(String)  # For MCQ/MSQ, store as a JSON array
     correct_answer = Column(String)  # Store correct answer(s)
     duration=Column(Integer)# seconds
+
+    quiz = relationship("Quiz", back_populates="questions")
 
 class Score(Base):
     __tablename__ = "scores"
