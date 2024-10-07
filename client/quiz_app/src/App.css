@@ -44,7 +44,7 @@
 
 
 
-{questionType === "Numerical" && (
+/* {questionType === "Numerical" && (
   <div className="space-y-2">
     <Label htmlFor="numericalAnswer">Enter Correct Numerical Answer</Label>
     <Input
@@ -53,4 +53,4 @@
       onChange={(e) => setNumericalAnswer(e.target.value)}
       placeholder="Set correct numerical answer"
       required
-    />
+    /> */

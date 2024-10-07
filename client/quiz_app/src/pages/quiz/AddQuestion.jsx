@@ -18,7 +18,8 @@ export default function AddQuestion({ quiz, setCurrentPage }) {
   const [questionText, setQuestionText] = useState("");
   const [questionType, setQuestionType] = useState("");
   const [options, setOptions] = useState(["", "", "", ""]);
-  const [correctAnswers, setCorrectAnswers] = useState([]); // Track multiple correct answers
+  const [correctAnswers, setCorrectAnswers] = useState([]);
+  const [userAnswers, setUserAnswers] = useState([]);
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
@@ -33,8 +34,8 @@ export default function AddQuestion({ quiz, setCurrentPage }) {
         body: JSON.stringify({
           question_text: questionText,
           question_type: questionType,
-          options: options.join(","), // join options as a comma-separated string
-          correct_answers: correctAnswers.join(","), // join correct answers for MSQ/MCQ
+          options: options.join(","),
+          correct_answers: correctAnswers.join(","),
         }),
       });
 
@@ -46,7 +47,7 @@ export default function AddQuestion({ quiz, setCurrentPage }) {
       setCurrentPage("dashboard");
       window.location.reload();
     } catch (err) {
-      setError(err.message); // Display error message
+      setError(err.message);
     }
   };
 
@@ -57,15 +58,29 @@ export default function AddQuestion({ quiz, setCurrentPage }) {
         ? correctAnswers.filter((answer) => answer !== option)
         : [...correctAnswers, option];
 
-      if (updatedCorrectAnswers.length > 3) {
-        setError("You can only select up to 3 correct answers.");
-      } else {
-        setCorrectAnswers(updatedCorrectAnswers);
-        setError(""); // Clear any previous errors
-      }
+      setCorrectAnswers(updatedCorrectAnswers);
     } else {
-      setCorrectAnswers([option]); // For MCQ, set only one correct answer
+      setCorrectAnswers([option]);
     }
+  };
+
+  // Track user answers for visual feedback
+  const handleUserAnswerSelect = (option) => {
+    if (questionType === "MSQ") {
+      const updatedUserAnswers = userAnswers.includes(option)
+        ? userAnswers.filter((answer) => answer !== option)
+        : [...userAnswers, option];
+      setUserAnswers(updatedUserAnswers);
+    } else {
+      setUserAnswers([option]);
+    }
+  };
+
+  const renderOptionFeedback = (option) => {
+    if (userAnswers.includes(option)) {
+      return correctAnswers.includes(option) ? "✓" : "✗"; // Correct or wrong mark
+    }
+    return null;
   };
 
   return (
@@ -124,17 +139,31 @@ export default function AddQuestion({ quiz, setCurrentPage }) {
                   required
                 />
                 <Button
-                  variant={correctAnswers.includes(option) ? "solid" : "outline"}
-                  onClick={() => handleCorrectAnswerSelect(option)}
+                  variant={userAnswers.includes(option) ? "solid" : "outline"}
+                  onClick={() => handleUserAnswerSelect(option)}
                 >
-                  {correctAnswers.includes(option) ? "Correct" : "Select"}
+                  {renderOptionFeedback(option) || "Select"}
                 </Button>
               </div>
             ))}
           </div>
         )}
 
-        {error && <p className="text-red-600">{error}</p>} {/* Display error */}
+        {questionType === "Numerical" && (
+          <div className="space-y-2">
+            <Label htmlFor="numericalAnswer">Numerical Answer</Label>
+            <Input
+              id="numericalAnswer"
+              value={userAnswers[0] || ""}
+              onChange={(e) => setUserAnswers([e.target.value])}
+              placeholder="Enter numerical answer"
+              required
+            />
+            <p>Get a hint if you're stuck!</p>
+          </div>
+        )}
+
+        {error && <p className="text-red-600">{error}</p>}
 
         <Button type="submit" className="w-full">
           Add Question
@@ -143,6 +172,3 @@ export default function AddQuestion({ quiz, setCurrentPage }) {
     </div>
   );
 }
-
-
-

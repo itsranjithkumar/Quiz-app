@@ -1,17 +1,17 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import jwtDecode from "jwt-decode";
 
-import { jwtDecode } from "jwt-decode";
-
+// Fetch role from token
 export const getRoleFromToken = () => {
   const token = localStorage.getItem('token');
   if (token) {
     const decodedToken = jwtDecode(token);
-    return decodedToken.role; // assuming the token contains a 'role' field
+    return decodedToken.role; // assuming 'role' exists in the token
   }
   return null;
 };
 
-
+// Thunk to login user
 export const loginUser = createAsyncThunk(
   'auth/login',
   async ({ email, password }, { rejectWithValue }) => {
@@ -29,43 +29,57 @@ export const loginUser = createAsyncThunk(
       }
 
       const data = await response.json();
-      const { access_token, role } = jwtDecode(data.access_token);
+      const { access_token } = data;  // Getting the token from response
+      const { role } = jwtDecode(access_token);  // Decoding token to get role
 
-      localStorage.setItem('token', data.access_token);
+      // Storing in localStorage
+      localStorage.setItem('token', access_token);
       localStorage.setItem('user', JSON.stringify({ email, role }));
 
-      return { token: data.access_token, user: { email, role } };
+      return { token: access_token, user: { email, role } };
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
 
-
+// Thunk to check authentication
 export const checkAuth = createAsyncThunk(
   'auth/check',
   async (_, { rejectWithValue }) => {
-    const token = localStorage.getItem('token');
-    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    try {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
 
-    if (token && user) {
-      return { token, user };
+      if (token && user) {
+        return { token, user };
+      }
+
+      return rejectWithValue('No token found');
+    } catch (error) {
+      return rejectWithValue('Invalid JSON in localStorage');
     }
-
-    return rejectWithValue('No token found');
   }
 );
 
 interface AuthState {
-  user: null | { email: string };
+  user: null | { email: string; role: string };
   token: string | null;
   isAuthenticated: boolean;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
 
+// Initial state
 const initialState: AuthState = {
-  user: JSON.parse(localStorage.getItem('user') || 'null'),
+  user: (() => {
+    try {
+      return JSON.parse(localStorage.getItem('user') || 'null');
+    } catch (e) {
+      console.error('Error parsing user from localStorage:', e);
+      return null;
+    }
+  })(),
   token: localStorage.getItem('token'),
   isAuthenticated: !!localStorage.getItem('token'),
   status: 'idle',
